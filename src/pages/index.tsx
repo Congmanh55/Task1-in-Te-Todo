@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import "./style.css";
-
-interface IProps {
-  id?: number;
-  name?: string;
-  date_start: string;
-  active: boolean;
-}
+import Footer from "./Footer/Footer";
+import { getDay } from "../utils/type";
 
 const TodoPage = () => {
   const [inputValue, setInputValue] = useState("");
@@ -14,11 +9,13 @@ const TodoPage = () => {
     {
       id: 1,
       name: "Alice",
-      date_start: "28/6/2024",
+      date_start: `${getDay()}`,
       active: true,
     },
   ]);
-  const [filter, setFilter] = useState<"All" | "Active" | "Completed" | "Center">("All");
+  const [filter, setFilter] = useState<
+    "All" | "Active" | "Completed" | "Center"
+  >("All");
 
   const handleInputChange = (e: any) => {
     setInputValue(e.target.value);
@@ -31,7 +28,7 @@ const TodoPage = () => {
         const json = {
           id: dataArray.length + 1,
           name: inputValue.trim(),
-          date_start: "4/5",
+          date_start: `${getDay()}`,
           active: true,
         };
         setDataArray([...dataArray, json]);
@@ -57,10 +54,12 @@ const TodoPage = () => {
     if (filter === "Completed") return dataArray.filter((item) => !item.active);
     return dataArray;
   };
+  const handleClickItem = (item: any) => {
+    setFilter(item);
+  };
 
   const filteredData = getFilteredData();
   const activeCount = dataArray.filter((item) => item.active).length;
-
   return (
     <div className="container">
       <div className="todo-container">
@@ -90,20 +89,19 @@ const TodoPage = () => {
                     onChange={() => handleClickBox(index)}
                   />
                   <span className="custom-checkbox"></span>
-                  <div className={`text ${!item.active ? "completed" : ""}`}>{item.name}</div>
+                  <div className={`text ${!item.active ? "completed" : ""}`}>
+                    {item.name}
+                  </div>
                 </label>
               ))}
             </div>
           </div>
-          <div className="footer">
-            <div className="footer-left">{activeCount} item(s) left</div>
-            <div className="footer-center">
-              <div className={filter == "All" ? "footer-center-fc" : "footer-center-all"} onClick={() => setFilter("All")}>All</div>
-              <div className={filter == "Active" ? "footer-center-fc" : "footer-center-active"} onClick={() => setFilter("Active")}>Active</div>
-              <div className={filter == "Completed" ? "footer-center-fc" : "footer-center-completed"} onClick={() => setFilter("Completed")}>Completed</div>
-            </div>
-            <div className="footer-right" onClick={clearCompleted}>Clear completed</div>
-          </div>
+          <Footer
+            activeCount={activeCount}
+            filter={filter}
+            handleClickItem={() => handleClickItem}
+            clearCompleted={() => clearCompleted}
+          />
         </div>
         <div className="body-container-z2"></div>
         <div className="body-container-z3"></div>
