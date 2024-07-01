@@ -18,7 +18,7 @@ const TodoPage = () => {
       active: true,
     },
   ]);
-  const [filter, setFilter] = useState<"All" | "Active" | "Completed">("All");
+  const [filter, setFilter] = useState<"All" | "Active" | "Completed" | "Center">("All");
 
   const handleInputChange = (e: any) => {
     setInputValue(e.target.value);
@@ -64,7 +64,7 @@ const TodoPage = () => {
   return (
     <div className="container">
       <div className="todo-container">
-        <div>TODO</div>
+        <div className="title">todos</div>
         <div className="body-container">
           <div>
             <div className="task">
@@ -98,13 +98,15 @@ const TodoPage = () => {
           <div className="footer">
             <div className="footer-left">{activeCount} item(s) left</div>
             <div className="footer-center">
-              <div className="footer-center-all" onClick={() => setFilter("All")}>All</div>
-              <div className="footer-center-active" onClick={() => setFilter("Active")}>Active</div>
-              <div className="footer-center-completed" onClick={() => setFilter("Completed")}>Completed</div>
+              <div className={filter == "All" ? "footer-center-fc" : "footer-center-all"} onClick={() => setFilter("All")}>All</div>
+              <div className={filter == "Active" ? "footer-center-fc" : "footer-center-active"} onClick={() => setFilter("Active")}>Active</div>
+              <div className={filter == "Completed" ? "footer-center-fc" : "footer-center-completed"} onClick={() => setFilter("Completed")}>Completed</div>
             </div>
             <div className="footer-right" onClick={clearCompleted}>Clear completed</div>
           </div>
         </div>
+        <div className="body-container-z2"></div>
+        <div className="body-container-z3"></div>
       </div>
     </div>
   );
