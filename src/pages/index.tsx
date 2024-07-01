@@ -60,6 +60,7 @@ const TodoPage = () => {
 
   const filteredData = getFilteredData();
   const activeCount = dataArray.filter((item) => item.active).length;
+  console.log(activeCount)
   return (
     <div className="container">
       <div className="todo-container">
@@ -99,8 +100,8 @@ const TodoPage = () => {
           <Footer
             activeCount={activeCount}
             filter={filter}
-            handleClickItem={() => handleClickItem}
-            clearCompleted={() => clearCompleted}
+            handleClickItem={handleClickItem}
+            clearCompleted={clearCompleted}
           />
         </div>
         <div className="body-container-z2"></div>
