@@ -1,21 +1,57 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.css";
 import Footer from "./Footer/Footer";
 import { getDay } from "../utils/type";
+import axios from "axios";
+
+interface ITodos {
+  id: number;
+  username: string;
+  date: string;
+  active: boolean;
+}
 
 const TodoPage = () => {
   const [inputValue, setInputValue] = useState("");
-  const [dataArray, setDataArray] = useState([
-    {
-      id: 1,
-      name: "Alice",
-      date_start: `${getDay()}`,
-      active: true,
-    },
-  ]);
+  const [dataArray, setDataArray] = useState<ITodos[]>([]);
   const [filter, setFilter] = useState<
     "All" | "Active" | "Completed" | "Center"
   >("All");
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  //GET
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/todos');
+      setDataArray(response.data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
+
+  //POST 
+  const addTodo = async () => {
+    try {
+      await axios.post('http://localhost:5000/todos', {username: inputValue, date: getDay(), active: true});
+      setInputValue('');
+      fetchUsers();
+    }catch(error){
+      console.error('Add data error', error);
+    }
+  }
+
+  //DELETE
+  const deleteTodo = async (id: number) => {
+    try {
+      await axios.delete(`http://localhost:5000/todos/${id}`);
+      fetchUsers(); 
+    } catch (error) {
+      console.error('Error deleting todo:', error);
+    }
+  };
 
   const handleInputChange = (e: any) => {
     setInputValue(e.target.value);
@@ -24,16 +60,9 @@ const TodoPage = () => {
   const handleKeyPress = (e: any) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      if (inputValue.trim()) {
-        const json = {
-          id: dataArray.length + 1,
-          name: inputValue.trim(),
-          date_start: `${getDay()}`,
-          active: true,
-        };
-        setDataArray([...dataArray, json]);
-        setInputValue("");
-      }
+      // if (inputValue.trim()) {
+        addTodo();
+      // }
     }
   };
 
@@ -45,8 +74,11 @@ const TodoPage = () => {
   };
 
   const clearCompleted = () => {
-    const newDataArray = dataArray.filter((item) => item.active);
-    setDataArray(newDataArray);
+    dataArray.forEach((item) => {
+      if(item.active === false) {
+        deleteTodo(item.id);
+      };
+    });
   };
 
   const getFilteredData = () => {
@@ -60,7 +92,9 @@ const TodoPage = () => {
 
   const filteredData = getFilteredData();
   const activeCount = dataArray.filter((item) => item.active).length;
-  console.log(activeCount)
+
+  console.log('check data',dataArray)
+
   return (
     <div className="container">
       <div className="todo-container">
@@ -91,7 +125,7 @@ const TodoPage = () => {
                   />
                   <span className="custom-checkbox"></span>
                   <div className={`text ${!item.active ? "completed" : ""}`}>
-                    {item.name}
+                    {item.username}
                   </div>
                 </label>
               ))}
